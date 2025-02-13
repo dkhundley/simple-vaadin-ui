@@ -1,16 +1,16 @@
 # Ignore build output directories
-/target/
-/build/
+target/
+build/
 
 # Ignore IDE specific files
-/.idea/
-/*.iml
-/.project
-/.classpath
-/.settings/
+.idea/
+*.iml
+.project
+.classpath
+.settings/
 
 # Ignore Maven specific files
-/.mvn/
+.mvn/
 mvnw
 mvnw.cmd
 
