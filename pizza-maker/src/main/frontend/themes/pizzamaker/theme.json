@@ -1,0 +1,9 @@
+{
+  "lumoImports" : [ "typography", "color", "spacing", "badge", "utility" ],
+  "assets" : {
+    "@fontsource/coming-soon" : {
+      "*.css" : "@fontsource/coming-soon",
+      "files/*" : "@fontsource/coming-soon/files"
+    }
+  }
+}

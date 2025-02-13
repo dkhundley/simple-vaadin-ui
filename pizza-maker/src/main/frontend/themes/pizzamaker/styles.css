@@ -1,0 +1,7 @@
+@import url('./views/order-taker-view.css');
+@import url('./views/confirmation-screen-view.css');
+@import url('@fontsource/coming-soon/index.css');    html {
+      --lumo-body-text-color: hsla(214, 46%, 22%, 0.94);
+--lumo-font-family: Coming Soon;
+
+    }
