@@ -1,0 +1,32 @@
+# Ignore build output directories
+/target/
+/build/
+
+# Ignore IDE specific files
+/.idea/
+/*.iml
+/.project
+/.classpath
+/.settings/
+
+# Ignore Maven specific files
+/.mvn/
+mvnw
+mvnw.cmd
+
+# Ignore temporary files
+*.log
+*.tmp
+*.bak
+*.swp
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
+
+# Ignore Vaadin specific files
+/node_modules/
+/frontend/generated/
+/frontend/build/
+/flow-frontend/
+/webpack.generated.js
