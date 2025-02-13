@@ -1,32 +1,64 @@
-# Ignore build output directories
+# Ignore build directories
+/target/
+/build/
 target/
-build/
+generated/
+**/index.html
+bundles/
 
-# Ignore IDE specific files
-.idea/
-*.iml
+# Ignore Maven specific files
+.mvn/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Ignore Gradle specific files
+.gradle/
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# Ignore Eclipse specific files
 .project
 .classpath
 .settings/
 
-# Ignore Maven specific files
-.mvn/
-mvnw
-mvnw.cmd
+# Ignore IntelliJ IDEA specific files
+.idea/
+*.iml
+*.iws
+out/
 
-# Ignore temporary files
+# Ignore NetBeans specific files
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Ignore VS Code specific files
+.vscode/
+
+# Ignore logs and temporary files
+logs/
 *.log
-*.tmp
-*.bak
+hs_err_pid*
 *.swp
-
-# Ignore OS specific files
 .DS_Store
 Thumbs.db
 
-# Ignore Vaadin specific files
-/node_modules/
-/frontend/generated/
-/frontend/build/
-/flow-frontend/
-/webpack.generated.js
+# Ignore Vaadin specific build files
+node_modules/
+.flow/
+frontend/generated/
+target/frontend/
+webpack.generated.js
+pnpm-lock.yaml
+package-lock.json
+
+# Ignore JRebel files
+.rebel.xml
+
+# Ignore Docker files (if using Docker)
+docker-compose.override.yml
