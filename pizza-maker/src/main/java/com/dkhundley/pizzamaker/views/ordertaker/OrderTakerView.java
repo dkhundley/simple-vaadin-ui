@@ -10,6 +10,7 @@ import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Hr;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -24,10 +25,23 @@ import com.vaadin.flow.component.UI;
 import com.dkhundley.pizzamaker.views.confirmationscreen.ConfirmationScreenView;
 import com.vaadin.flow.router.QueryParameters;
 import java.util.Map;
+import java.util.Set;
 
 @PageTitle("Order Taker")
 @Route("")
 public class OrderTakerView extends Composite<VerticalLayout> {
+    private float subtotal = 0.0f;
+
+    // Move the updateSubtotal method outside the constructor
+    private void updateSubtotal(SampleItem crustSize, Set<SampleItem> meats, Set<SampleItem> veggies, H4 subtotalValueLabel) {
+        subtotal = 0.0f;
+        if (crustSize != null) {
+            subtotal += crustSize.value();
+        }
+        subtotal += meats.stream().map(SampleItem::value).reduce(0.0f, Float::sum);
+        subtotal += veggies.stream().map(SampleItem::value).reduce(0.0f, Float::sum);
+        subtotalValueLabel.setText(String.format("$%.2f", subtotal));
+    }
 
     public OrderTakerView() {
         // Page title
@@ -71,6 +85,33 @@ public class OrderTakerView extends Composite<VerticalLayout> {
         veggiesSelect.setLabel("Veggies");
         veggiesSelect.setWidth("min-content");
         setVeggiesSelectSampleData(veggiesSelect);
+        
+        // Subtotal
+        H4 subtotalLabel = new H4("Subtotal:");
+        H4 subtotalValueLabel = new H4(String.format("$%.2f", subtotal));
+        subtotalValueLabel.setWidth("max-content");
+
+        // Update subtotal when selections change
+        crustSizeSelect.addValueChangeListener(e -> updateSubtotal(
+            crustSizeSelect.getValue(),
+            meatsSelect.getValue(),
+            veggiesSelect.getValue(),
+            subtotalValueLabel
+        ));
+
+        meatsSelect.addValueChangeListener(e -> updateSubtotal(
+            crustSizeSelect.getValue(),
+            meatsSelect.getValue(),
+            veggiesSelect.getValue(),
+            subtotalValueLabel
+        ));
+
+        veggiesSelect.addValueChangeListener(e -> updateSubtotal(
+            crustSizeSelect.getValue(),
+            meatsSelect.getValue(),
+            veggiesSelect.getValue(),
+            subtotalValueLabel
+        ));
 
         // Horizontal line separator
         Hr separator2 = new Hr();
@@ -151,7 +192,7 @@ public class OrderTakerView extends Composite<VerticalLayout> {
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         getContent().add(title, subtitle, separator1, toppingsTitle, pizzaOptionsForm, separator2, tipTitle, tipPercentageRadioGroup, customTipAmountField, submitOrderButton);
-        pizzaOptionsForm.add(crustSizeSelect, meatsSelect, veggiesSelect);
+        pizzaOptionsForm.add(crustSizeSelect, meatsSelect, veggiesSelect, subtotalLabel, subtotalValueLabel);
     }
 
     // Sample item record
