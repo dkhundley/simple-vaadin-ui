@@ -1,3 +1,5 @@
+![](assets/vaadin-banner.png)
+
 # Building a Simple Java-Based with Vaadin
 In this repository, I will share how you can build a simple Java-based UI with **Vaadin**. Vaadin is an open source framework that allows users to build a simple web-based user interface using their drag-and-drop builder.
 
@@ -30,3 +32,7 @@ Again, this tutorial will cover how to use Vaadin on macOS and Windows, but I hi
 
 ## Installation Instructions
 TBA
+
+
+
+## Part 1: Creating the Vaadin UI
