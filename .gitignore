@@ -62,3 +62,27 @@ package-lock.json
 
 # Ignore Docker files (if using Docker)
 docker-compose.override.yml
+
+# Ignore Vite build artifacts and dependencies
+node_modules/
+.pnpm/
+.vite/
+.vitepress/
+dist/
+.vscode/
+
+# Ignore Vaadin-generated files
+frontend/generated/
+target/
+vaadin.generated.ts
+package-lock.json
+pnpm-lock.yaml
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Ignore IDE / OS files (optional)
+.idea/
+.DS_Store
+*.iml
+*.log

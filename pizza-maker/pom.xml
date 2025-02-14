@@ -40,6 +40,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-devtools</artifactId>
+                <version>3.4.2</version> <!-- Add the version here -->
+                <optional>true</optional>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
