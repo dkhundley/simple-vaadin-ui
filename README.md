@@ -1,6 +1,6 @@
 ![](assets/vaadin-banner.png)
 
-# Building a Simple Java-Based with Vaadin
+# Building a Simple Java-Based UI with Vaadin
 In this repository, I will share how you can build a simple Java-based UI with **Vaadin**. Vaadin is an open source framework that allows users to build a simple web-based user interface using their drag-and-drop builder.
 
 To keep things easy and simple to understand, we're specifically going to be building a **pizza maker** (or, I guess, pizza order taker, if we're being specific). We're going to keep it simple by building only two screens, or *views*, which include:
