@@ -30,8 +30,26 @@ Here are the reasons I like GitHub Codespaces:
 Again, this tutorial will cover how to use Vaadin on macOS and Windows, but I highly recommend using GitHub Codespaces for students. It just makes things much simpler since installation can be one of the trickiest parts of coding. (And transparently, I struggled a lot with getting all the installations right on my Mac and Windows machines.)
 
 ## Installation Instructions
+In this section, I'll demonstrate three separate ways to get this code up and running on your computer, depending on the kind of computer you have. These three ways include:
+
+- **macOS**: This is the operating system that Apple computers run on.
+- **Windows**: This is the operating system that most PCs run on.
+- **GitHub Codespaces**: This is a cloud-based development environment that allows you to code directly from your browser that we discussed briefly in the "Prerequisites" section.
+
+Regardless of which computer type you use, we'll have to also install some additional tools to help us with our Java development. These tools include:
+
+- **Java 21 LTS**: This is the version of Java that we'll be using for this tutorial. LTS stands for "long-term support," and it's generally a good idea to go with the LTS version. At the time I'm writing this, the LTS version is Java 21 LTS.
+- **Maven**: Think of this as a tool that helps us manage all the other tools and depndencies we'll need for our Java project. It seeks to make a developer's life easier by handling all the "heavy lifting" of managing dependencies.
+- **Spring Boot**: This is a framework that makes it easy to create stand-alone, production-grade Spring-based Applications that you can "just run." It's a bit more complex than that, but that's the general idea. In our case, Vaadin uses Spring Boot under the hood, so we'll need to have it installed to make this code work properly.
+
+### macOS Installation Steps
 TBA
 
+### Windows Installation Steps
+TBA
+
+### GitHub Codespaces Installation Steps
+TBA
 
 
 ## Part 1: Creating the Vaadin UI
@@ -73,3 +91,4 @@ What this will do is download a `.zip` file to your computer. Unzip this file, a
 This effectively ends part 1 of our tutorial! In part 2, you'll see the alterations we'll need to make in order to make our pizza maker work as intended. You'll also be able to directly contrast how the code will differ in the end from the "raw" code that Vaadin provided us in part 1 here.
 
 ## Part 2: Altering the Java Code
+Now that we've completed building the look-and-feel of our app using Vaadin's builder, we're ready to make alterations to it so that we can get it fully functioning as we'd expect. If you have not done so already, please ensure you have completed the steps in the "Installation Instructions" section above.
