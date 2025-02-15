@@ -70,9 +70,9 @@ After you have Homebrew installed, you can follow these steps to install the add
 If you see the version numbers for Java, Maven, and Spring Boot, respectively, then you're good to go! 
 
 ### Windows Installation Steps
-For Windows, we'll be using **Scoop** as our package manager. Scoop is similar to Homebrew for macOS and makes installing developer tools much easier. Here's how to get everything set up:
+In the macOS section, we installed a tool called Homebrew to install our software dependencies. Unfortunately, Homebrew is not available on Windows, so instead, we'll be using an alternative called **Scoop** as our package manager. Scoop is similar to Homebrew for macOS and makes installing developer tools much easier. Here's how to get everything set up:
 
-1. First, open PowerShell as Administrator (right-click and select "Run as Administrator")
+1. First, open PowerShell as Administrator (right-click and select "Run as Administrator"). (Note: PowerShell *should* be installed by default. If not, you should be able to download it from the Microsoft App Store.)
 
 2. Install Scoop by running these commands:
     ```powershell
@@ -129,6 +129,9 @@ To install VS Code on macOS or Windows, all you have to do is visit the [officia
 This section will largely take place in your web browser. We're going to be using Vaadin's drag-and-drop builder to create the UI for our pizza maker. If you've ever used a website builder like Wix or Squarespace, this is going to feel very similar. 
 
 ### The Vaadin Builder
+
+![](assets/vaadin-builder.png)
+
 Here are the steps for navigating to Vaadin's builder:
 
 1. Go to Vaadin's website: [https://start.vaadin.com/](https://start.vaadin.com/)
