@@ -48,14 +48,73 @@ A common way that software developers use to manage software installations on ma
 After you have Homebrew installed, you can follow these steps to install the additional tools we need:
 
 1. Open "Terminal" on your Mac. You can find this by searching for "Terminal" in Spotlight (Cmd + Space).
+2. Install Java 21 LTS by running the following command:
+    ```bash
+    brew install openjdk@21
+    ```
+3. Install Maven by running the following command:
+    ```bash
+    brew install maven
+    ```
+4. Install Spring Boot by running the following command:
+    ```bash
+    brew install spring-boot
+    ```
+5. You can verify that everything is installed correctly by running the following commands:
+    ```bash
+    java -version
+    mvn -version
+    spring --version
+    ```
 
-
+If you see the version numbers for Java, Maven, and Spring Boot, respectively, then you're good to go! 
 
 ### Windows Installation Steps
-TBA
+For Windows, we'll be using **Scoop** as our package manager. Scoop is similar to Homebrew for macOS and makes installing developer tools much easier. Here's how to get everything set up:
+
+1. First, open PowerShell as Administrator (right-click and select "Run as Administrator")
+
+2. Install Scoop by running these commands:
+    ```powershell
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+    irm get.scoop.sh | iex
+    ```
+
+3. Install Java 21 LTS:
+    ```powershell
+    scoop bucket add java
+    scoop install openjdk21
+    ```
+
+4. Install Maven:
+    ```powershell
+    scoop install maven
+    ```
+
+5. Install Spring Boot:
+    ```powershell
+    scoop bucket add extras
+    scoop install springboot
+    ```
+
+6. Verify the installations by running:
+    ```powershell
+    java -version
+    mvn -version
+    spring --version
+    ```
+
+If you see version numbers displayed for each command, you're all set!
 
 ### GitHub Codespaces Installation Steps
-TBA
+As I shared before, this is the path that I recommend for most people given that it's the only path that I can guarantee will work for everybody. This is because I can't verify what specific version of macOS or Windows you're on, making it hard to give specific recommendations if you run into any issues. With GitHub Codespaces, you're using a standardized environment that I know will work for this tutorial.
+
+In order to make use of GitHub Codespaces, you will also need to create a **GitHub repository**. We will cover the specific steps for how to do this down below, but it's important to share what a GitHub repository is. A GitHub repository is a place where you can store and manage your code. It's like a folder for your project that lives on the internet. You can think of it as a cloud-based storage space for your code that you can access from anywhere. It might seem like an extra unnecessary step to create a GitHub repository to be able to use a GitHub Codespace, but it actually works out very well because this will allow you to easily save your work back to GitHub and be able to share it with others, including your fellow students and teacher.
+
+Here are the steps to get set up with GitHub Codespaces:
+
+1. Sign up for a free GitHub account if you don't already have one. You can do this by visiting the [GitHub website](https://github.com/) and following the sign up process behind the "Sign Up" button.
+
 
 ### Visual Studio Code
 In addition to installing all the software we've done so far, we will also need to ensure that we have installed **Visual Studio Code**, or **VS Code** for short. To be clear, when it comes to Java development, VS Code is actually NOT the number one recommended integrated development environment (IDE). That honor goes to **IntelliJ IDEA**. However, I'm recommending VS Code for this tutorial for a number of reasons. In short, VS Code is the most popular IDE in the world for software developers, and it's also the IDE that GitHub Codespaces uses. So, if you're following along with this tutorial, you'll need to have VS Code installed on your computer.
