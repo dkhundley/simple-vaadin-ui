@@ -179,6 +179,159 @@ We ended part 1 with a `.zip` file that contains all the Java code that Vaadin g
 5. Navigate to the unzipped folder that contains the Java code that Vaadin generated for you.
 6. Click on the "Select Folder" button.
 
+(Note: VS Code's UI also supports drag and dropping files into the window. So, if you prefer, you can also drag the unzipped folder into the VS Code window.)
+
 You should now see all the files and folders that Vaadin generated for you in the sidebar of VS Code. If you're using GitHub Codespaces, you should see the same thing in the sidebar of your browser. It should look something like this:
 
 ![](assets/vscode-loaded-vaadin-code.png)
+
+### Exploring the "Raw" Files
+Before we go altering anything, let's take a moment for us to explore what Vaadin created for us. While almost every file in here is necessary, **we will NOT touch most of these files**. For brevity's sake and the fact that I am not a Java expect, assume that if I don't mention it, you shouldn't touch it.For this tutorial's sake, I will make reference to the raw contents of my files that I've saved in the `pizza-maker-raw` folder.
+
+#### The `pizza-maker-raw` Folder
+As we delve into this first layer of files, you'll see another subfolder called `src` alongside a number of other files. Generally speaking, software developers store their core "source" code in a folder called `src`, which as you can guess is short for "source." We'll revisit the `src` folder in a second.
+
+The other files are what I largely refer to as "helper" files. For the most part, they aren't really necessary; however, the one file that is very important is `pom.xml`. This file is what Maven uses to manage all the dependencies for our project. If you're not familiar with Maven, think of it as a tool that helps us manage all the other tools and dependencies we'll need for our Java project.
+
+We can ignore the other files here in `pizza-maker-raw`. Let's move into the `src` folder.
+
+#### The `src` Folder
+The `src` folder is where the "meat" of our project is stored. In the `src` folder, you'll see a number of subfolders and files. Again, all the files in here are necessary, but for the most part, we can ignore them. In fact, we only really care about one subfolder: we have to drill down to where our Java files are representing our two "views". In my case, these files are stored in `src/main/java/com/dkhundley/pizzamaker/views`.
+
+When you finally get down to this `/views/` subfolder, you'll see two final sets of subfolders: one representing the order taker called `ordertaker` and the other representing the confirmation screen called `confirmationscreen`. Inside each of these respective subfolders are the Java files that build each view. **THESE ARE THE ONLY TWO JAVA FILES WE WILL BE ALTERING!!!** To keep things extremely simple, we are only going to be altering the content of these two files and nothing else. No alterations to any other files in `src`; no new file additions anywhere in `src`.
+
+#### Exploring the Raw Order Taker Java File
+Both the order taker and confirmation screen files are structured relatively similarly, so we're going to focus on just the order taker file. Let's break this file down, working our way from top to bottom.
+
+At the top from lines 1-21, you'll notice we have a number of import statements. These import statements are bringing in extra code to help Java get its job done. The way I like to think about it is sort of like a smartphone. When you buy a new smartphone, it probably comes with a few default apps. But if you want to do something more, like browsing Instagram, playing Angry Birds, or something else, you'll have to download a third party app from the app store. Import statements are very much like smartphone apps. They bring in extra code that Java can use to do more things.
+
+```java
+package com.dkhundley.pizzamaker.views.ordertaker;
+
+import com.vaadin.flow.component.Composite;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.Hr;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
+import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
+import com.vaadin.flow.component.select.Select;
+import com.vaadin.flow.component.textfield.NumberField;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
+import java.util.ArrayList;
+import java.util.List;
+```
+
+You'll notice that we're naturally importing a lot of components from Vaadin. This is based on the UI we built in Vaadin's builder. Later on when we start altering our code, we're going to have to revisit these imports because we'll need to add a few extra things to get everything working properly.
+
+As we move down into lines 27-82, you'll see a series of lines that basically represent each of the components displayed on the UI.
+
+```java
+public OrderTakerView() {
+        H1 h1 = new H1();
+        H2 h2 = new H2();
+        Hr hr = new Hr();
+        H3 h3 = new H3();
+        FormLayout formLayout3Col = new FormLayout();
+        Select select = new Select();
+        MultiSelectComboBox multiSelectComboBox = new MultiSelectComboBox();
+        MultiSelectComboBox multiSelectComboBox2 = new MultiSelectComboBox();
+        Hr hr2 = new Hr();
+        H3 h32 = new H3();
+        RadioButtonGroup radioGroup = new RadioButtonGroup();
+        NumberField numberField = new NumberField();
+        Button buttonPrimary = new Button();
+        getContent().setWidth("100%");
+        getContent().getStyle().set("flex-grow", "1");
+        h1.setText("Pizza Maker");
+        h1.setWidth("max-content");
+        h2.setText("Create your pizza below!");
+        h2.setWidth("max-content");
+        h3.setText("Select Your Toppings");
+        h3.setWidth("max-content");
+        formLayout3Col.setWidth("100%");
+        formLayout3Col.setResponsiveSteps(new ResponsiveStep("0", 1), new ResponsiveStep("250px", 2),
+                new ResponsiveStep("500px", 3));
+        select.setLabel("Crust Size");
+        select.setWidth("min-content");
+        setSelectSampleData(select);
+        multiSelectComboBox.setLabel("Meats");
+        multiSelectComboBox.setWidth("min-content");
+        setMultiSelectComboBoxSampleData(multiSelectComboBox);
+        multiSelectComboBox2.setLabel("Veggies");
+        multiSelectComboBox2.setWidth("min-content");
+        setMultiSelectComboBoxSampleData(multiSelectComboBox2);
+        h32.setText("Add a Tip?");
+        h32.setWidth("max-content");
+        radioGroup.setLabel("Percentage");
+        radioGroup.setWidth("min-content");
+        radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+        radioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
+        numberField.setLabel("Custom Amount");
+        numberField.setWidth("min-content");
+        buttonPrimary.setText("Submit Order!");
+        buttonPrimary.setWidth("min-content");
+        buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        getContent().add(h1);
+        getContent().add(h2);
+        getContent().add(hr);
+        getContent().add(h3);
+        getContent().add(formLayout3Col);
+        formLayout3Col.add(select);
+        formLayout3Col.add(multiSelectComboBox);
+        formLayout3Col.add(multiSelectComboBox2);
+        getContent().add(hr2);
+        getContent().add(h32);
+        getContent().add(radioGroup);
+        getContent().add(numberField);
+        getContent().add(buttonPrimary);
+    }
+```
+
+The way this code renders on the web page follows the top-to-bottom order of these lines. For example, the first thing you'll see on the page is the `h1` header that says "Pizza Maker." The next thing you'll see is the `h2` header that says "Create your pizza below!" and so on. This is why the order of these lines is so important.
+
+Frankly... I think this code is messy. It's not very clear nor readable, so we're going to come back in the next section with a tip on how to make this more workable.
+
+Finally, at the bottom with lines 87-110, you'll see the following code:
+
+```java
+record SampleItem(String value, String label, Boolean disabled) {
+    }
+
+    private void setSelectSampleData(Select select) {
+        List<SampleItem> sampleItems = new ArrayList<>();
+        sampleItems.add(new SampleItem("first", "First", null));
+        sampleItems.add(new SampleItem("second", "Second", null));
+        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
+        sampleItems.add(new SampleItem("fourth", "Fourth", null));
+        select.setItems(sampleItems);
+        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
+        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
+
+    private void setMultiSelectComboBoxSampleData(MultiSelectComboBox multiSelectComboBox) {
+        List<SampleItem> sampleItems = new ArrayList<>();
+        sampleItems.add(new SampleItem("first", "First", null));
+        sampleItems.add(new SampleItem("second", "Second", null));
+        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
+        sampleItems.add(new SampleItem("fourth", "Fourth", null));
+        multiSelectComboBox.setItems(sampleItems);
+        multiSelectComboBox.setItemLabelGenerator(item -> ((SampleItem) item).label());
+    }
+```
+
+Let's first address that `record` piece. What this represents is a very simple means of creating a way to maintain data in Java. In this case, we're creating a `SampleItem` record that has three fields: `value`, `label`, and `disabled`. This is a very simple way to create a sort of "data structure" in Java. We won't be using this `record` code as is; we'll revisit this in a later section.
+
+The `setSelectSampleData` and `setMultiSelectComboBoxSampleData` methods are used to populate the `Select` and `MultiSelectComboBox` components with data. This is a very common pattern in Java, and it's a way to keep our code clean and organized. You can imagine here that we'll want to update something like the dropdown selector to contain information about our pizza crust sizes and toppings. We'll also revisit this in a later section.
+
+
+
+### Running the Vaadin UI for the First Time
+Even though we haven't made any alterations to our code yet, it is still in a state where we can go ahead and run it right away. This section assumes you've already made it through the "Installation Instructions" section, so if you haven't, please go back and complete those steps.
