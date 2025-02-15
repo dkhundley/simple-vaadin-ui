@@ -114,6 +114,9 @@ In order to make use of GitHub Codespaces, you will also need to create a **GitH
 Here are the steps to get set up with GitHub Codespaces:
 
 1. Sign up for a free GitHub account if you don't already have one. You can do this by visiting the [GitHub website](https://github.com/) and following the sign up process behind the "Sign Up" button.
+2. After creating your GitHub account, you should see a dashboard screen that looks like the one below. To create a new GitHub repository, click the green book-like "New" icon.
+
+![](assets/github-create-new-repo.png)
 
 
 ### Visual Studio Code
