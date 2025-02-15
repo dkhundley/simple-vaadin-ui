@@ -43,13 +43,24 @@ Regardless of which computer type you use, we'll have to also install some addit
 - **Spring Boot**: This is a framework that makes it easy to create stand-alone, production-grade Spring-based Applications that you can "just run." It's a bit more complex than that, but that's the general idea. In our case, Vaadin uses Spring Boot under the hood, so we'll need to have it installed to make this code work properly.
 
 ### macOS Installation Steps
-TBA
+A common way that software developers use to manage software installations on macOS is through a package manager called **Homebrew**. Homebrew is a free and open-source software package management system that simplifies the installation of software on Apple's macOS operating system. The steps below assume that you already have Homebrew installed on your Mac. If you don't have Homebrew installed, you can find installation instructions on the [Homebrew website](https://brew.sh/). It's pretty easy to get going with Homebrew, so the linked tutorial will guide you there just fine.
+
+After you have Homebrew installed, you can follow these steps to install the additional tools we need:
+
+1. Open "Terminal" on your Mac. You can find this by searching for "Terminal" in Spotlight (Cmd + Space).
+
+
 
 ### Windows Installation Steps
 TBA
 
 ### GitHub Codespaces Installation Steps
 TBA
+
+### Visual Studio Code
+In addition to installing all the software we've done so far, we will also need to ensure that we have installed **Visual Studio Code**, or **VS Code** for short. To be clear, when it comes to Java development, VS Code is actually NOT the number one recommended integrated development environment (IDE). That honor goes to **IntelliJ IDEA**. However, I'm recommending VS Code for this tutorial for a number of reasons. In short, VS Code is the most popular IDE in the world for software developers, and it's also the IDE that GitHub Codespaces uses. So, if you're following along with this tutorial, you'll need to have VS Code installed on your computer.
+
+To install VS Code on macOS or Windows, all you have to do is visit the [official VS Code website](https://code.visualstudio.com/) and download the installer for your operating system. The installation process is pretty straightforward, and you should be up and running in no time. If you're using GitHub Codespaces, you don't need to worry about this step, as VS Code is already installed for you.
 
 
 ## Part 1: Creating the Vaadin UI
