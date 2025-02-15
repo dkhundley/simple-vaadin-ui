@@ -334,4 +334,10 @@ The `setSelectSampleData` and `setMultiSelectComboBoxSampleData` methods are use
 
 
 ### Running the Vaadin UI for the First Time
-Even though we haven't made any alterations to our code yet, it is still in a state where we can go ahead and run it right away. This section assumes you've already made it through the "Installation Instructions" section, so if you haven't, please go back and complete those steps.
+Even though we haven't made any alterations to our code yet, it is still in a state where we can go ahead and run it right away. This section assumes you've already made it through the "Installation Instructions" section, so if you haven't, please go back and complete those steps. With those steps completed, every step, command, and piece of code going forward should all be the same regardless of what computer / platform you're using.
+
+Given that this tutorial makes use of VS Code, I want to share how you can actually use the command line directly within VS Code. Per the screenshot below, if you click this icon, it will open up a tray at the bottom of the screen, with a number of tabs, one of these tabs being "Terminal". This is where you can run all the commands I'll be sharing in this tutorial. Additionally, you can also open / close this tray with the `cmd + j` keyboard shortcut.
+
+![](assets/vscode-open-terminal-tray.png)
+
+The Terminal tab is the command line where we will be running all our commands to actually create and build the Java project.
