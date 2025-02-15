@@ -165,3 +165,17 @@ This effectively ends part 1 of our tutorial! In part 2, you'll see the alterati
 
 ## Part 2: Altering the Java Code
 Now that we've completed building the look-and-feel of our app using Vaadin's builder, we're ready to make alterations to it so that we can get it fully functioning as we'd expect. If you have not done so already, please ensure you have completed the steps in the "Installation Instructions" section above.
+
+### Loading the Vaadin Code into VS Code
+We ended part 1 with a `.zip` file that contains all the Java code that Vaadin generated for us. We're going to want to load this code into VS Code so that we can start making alterations to it. Here's how you can do that:
+
+1. Unzip the `.zip` file that you downloaded from Vaadin's builder.
+2. Open VS Code on your computer. (If you're using GitHub Codespaces, you can skip this step, as VS Code is already open for you.)
+3. Click on the "File" menu in the top left corner of VS Code.
+4. Click on "Open Folder..."
+5. Navigate to the unzipped folder that contains the Java code that Vaadin generated for you.
+6. Click on the "Select Folder" button.
+
+You should now see all the files and folders that Vaadin generated for you in the sidebar of VS Code. If you're using GitHub Codespaces, you should see the same thing in the sidebar of your browser. It should look something like this:
+
+![](assets/vscode-loaded-vaadin-code.png)
