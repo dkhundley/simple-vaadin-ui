@@ -369,3 +369,34 @@ This is perfectly normal. You'll just have to keep waiting some time, and eventu
 In order to halt the application, go back to the Terminal tab in VS Code and press `ctrl + c` / `cmd + c`. This will stop the Spring Boot process, and you'll see a message in the Terminal that the process has been stopped.
 
 From here going forward, this is exactly how we will begin our application every time we want to see our changes in action. Now, you might be wondering, "Is there some way to set an autoreload thing so that I can see my changes in real time?" I believe the answer is technically yes, but I could not get it to work. I tried a number of different things, but I could not get the application to autoreload. If you're able to get this working, I'd love to hear how you did it!
+
+
+
+### Altering the Order Taker Java File
+We're finally ready into moving into altering our Java code. We're going to start with the order taker file, and we're going to make a number of alterations to it.
+
+#### ChatGPT Clean Code Tip
+TBA
+
+#### Updating the Menu Selectors
+TBA
+
+#### Updating Other UI Elements
+TBA
+
+#### Calculating Subtotal and Total
+TBA
+
+#### Passing Data to the Confirmation Screen
+TBA
+
+
+
+### Altering the Confirmation Screen Java File
+TBA
+
+#### Loading the Data from the Order Taker
+TBA
+
+#### Viewing the Order Details from the Order Taker
+TBA
