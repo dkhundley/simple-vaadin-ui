@@ -341,3 +341,31 @@ Given that this tutorial makes use of VS Code, I want to share how you can actua
 ![](assets/vscode-open-terminal-tray.png)
 
 The Terminal tab is the command line where we will be running all our commands to actually create and build the Java project.
+
+The first thing we'll need to do is to install our dependencies with the help of Maven. To do this, run the following command in the Terminal:
+
+```bash
+mvn clean install
+```
+
+Note that you only have to do this the first time we build the application. The only other time you may want to run this command is if you wanted to add additional dependencies down the road, but for the sake of this tutorial's simplicity, we won't be doing that. Also note that this process can take some time, upwards of 5 to 10 minutes.
+
+After the `mvn clean install` command has completed, you'll notice that many new files have been added to your working repository, going has high as 10,000 files! You may have noticed that my repository here contains a `.gitignore` file.  This file tells GitHub which files I do NOT want uploaded from my local computer. This is why all these new files you have on your computer after running `mvn clean install` are not showing up in my repository. The best part is that you don't need to do anything at all with these new files. They're all part of the build process, and you can safely ignore them.
+
+Now that we've installed our dependencies, we can run our application with the following command:
+
+```bash
+mvn spring-boot:run
+```
+
+The first time you run this, it can also take a while for the build process to complete. Not too long after the Spring Boot process begins doing its thing, VS Code will likely display some message to you that the application is running. You can then open up a web browser and navigate to `http://localhost:8080` to our application in action.
+
+Again, the first build process takes some time, so most likely, when you go to `http://localhost:8080`, you'll see the following screen.
+
+![](assets//vaadin-build-loading-screen.png)
+
+This is perfectly normal. You'll just have to keep waiting some time, and eventually, the pizza making order taker screen will show up just as you'd expect.
+
+In order to halt the application, go back to the Terminal tab in VS Code and press `ctrl + c` / `cmd + c`. This will stop the Spring Boot process, and you'll see a message in the Terminal that the process has been stopped.
+
+From here going forward, this is exactly how we will begin our application every time we want to see our changes in action. Now, you might be wondering, "Is there some way to set an autoreload thing so that I can see my changes in real time?" I believe the answer is technically yes, but I could not get it to work. I tried a number of different things, but I could not get the application to autoreload. If you're able to get this working, I'd love to hear how you did it!
