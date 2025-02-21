@@ -376,7 +376,17 @@ From here going forward, this is exactly how we will begin our application every
 We're finally ready into moving into altering our Java code. We're going to start with the order taker file, and we're going to make a number of alterations to it.
 
 #### ChatGPT Clean Code Tip
-TBA
+In the previous section when we looked at the code that Vaadin produces, we noted that the code is a little jumbled and not intuitive. That said, my first encouragement would be to leverage **ChatGPT** to help clean up the code. You don't need to have any paid subscription to do what I'm going to suggest. If you visit [ChatGPT's website](http://www.chatgpt.com), you are still able to make use of ChatGPT in a "logged out" fashion. Just a few things to keep in mind when using ChatGPT or any other Generative AI model:
+
+- In order to get the best results from a Generative AI model, we provide instructions for what we want our final output to be. We refer to these instructions as **prompt engineering**. I will share a bit of prompt engineering down below specifically for our situation here.
+- Be careful what data you give to ChatGPT. The free "logged out" version specifically notes that OpenAI will be allowed to train its future models on the data you give into it, so you definitely would not want to put in something like a credit card number or Social Security number. (In our situation, we're using pretty simple code, so I would not worry about using ChatGPT for this context.)
+- ChatGPT will always produce a confident sounding response, but that doesn't mean this is always a correct response. We refer to these confident but incorrect responses as **hallucinations**. You'll want to check to make sure that ChatGPT doesn't do anything wild with your code, but I'll help you put curbs around that down below so that you'll most likely get good results.
+
+```
+Below, I am going to paste some code that I generated using Vaadin to support a user interface with a Java-based backend. The code is functional but not necessarily intuitive. Can you please help me to clean up this code? Please make the variable names more descriptive and also add annotated comments where it is appropriate. Do not make any alterations to the functionality of the code itself.
+
+PASTE YOUR CODE HERE
+```
 
 #### Updating the Menu Selectors
 TBA
