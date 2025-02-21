@@ -376,6 +376,8 @@ From here going forward, this is exactly how we will begin our application every
 We're finally ready into moving into altering our Java code. We're going to start with the order taker file, and we're going to make a number of alterations to it.
 
 #### ChatGPT Clean Code Tip
+(Note: This ChatGPT section is recommended but not required. You're welcome to manually update your code to match closely to what the final pizza maker looks like.)
+
 In the previous section when we looked at the code that Vaadin produces, we noted that the code is a little jumbled and not intuitive. That said, my first encouragement would be to leverage **ChatGPT** to help clean up the code. You don't need to have any paid subscription to do what I'm going to suggest. If you visit [ChatGPT's website](http://www.chatgpt.com), you are still able to make use of ChatGPT in a "logged out" fashion. Just a few things to keep in mind when using ChatGPT or any other Generative AI model:
 
 - In order to get the best results from a Generative AI model, we provide instructions for what we want our final output to be. We refer to these instructions as **prompt engineering**. I will share a bit of prompt engineering down below specifically for our situation here.
