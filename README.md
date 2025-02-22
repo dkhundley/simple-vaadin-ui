@@ -8,6 +8,9 @@ To keep things easy and simple to understand, we're specifically going to be bui
 1. A form for the user to build their pizza, including the size, crust, and toppings.
 2. A confirmation screen that shows the user what they've ordered along with subtotal, tax, tip, and final total.
 
+### Video Tutorial
+If you're more of a visual learner, I completed a complementary video tutorial over on my YouTube channel [at this link](https://www.youtube.com/live/SzNTJ8aDEOo?si=3hrxXng3LYA1QRLS). The video covers a good chunk of the content in this text-based tutorial below, but isn't all inclusive of everything we cover in the text-based tutorial. I have also included timestamps in the description of the YouTube video if you would like to hop around to specific sections.
+
 ## Prerequisites
 There are two core things that we're going to be doing across this tutorial:
 
