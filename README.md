@@ -121,6 +121,61 @@ Here are the steps to get set up with GitHub Codespaces:
 
 ![](assets/github-create-new-repo.png)
 
+You'll then be greeted with the following screen below. The only thing you need to do on this form is to give your repository a name and then click "Create repository"
+
+![](assets/github-new-repo-form.png)
+
+Next, we'll need to define a "blueprint" of sorts that will define how we want GitHub to build our GitHub Codespace. This "blueprint" that I'm referring to comes in the form of this small bit of code called a `devcontainer.json` configuration file. For your benefit, I already created this bit of code, so all you need to do is to copy / paste it into your repository. Below shows a the screen you should be seeing immediately after creating your repository. Click on the "Create new file" button.
+
+![](assets/github-create-new-file.png)
+
+On this screen, we need to paste the configuration code for this `devcontainer.json` file. I have a copy of my own file in this repository [at this link](.devcontainer/devcontainer.json), but for your convenience, I've also pasted it here:
+
+```json
+{
+  "name": "Java - Vaadin Development Environment",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu", // Use a base image
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installMaven": "true",
+      "installGradle": "false"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vscjava.vscode-spring-initializr",
+        "vscjava.vscode-spring-boot-dashboard",
+        "vscjava.vscode-spring-boot-microservice",
+        "vscjava.vscode-maven",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
+  "forwardPorts": [8080],
+  "postCreateCommand": "mvn clean install"
+}
+```
+
+On this screen to create a new file, we just need to give the file the appropriate name of `.devcontainer/devcontainer.json`. You'll notice that there is a slash in there. What that indicates is that we're actually creating a new folder (also called **directory**) called `.devcontainer` and then creating a file in that new folder called `devcontainer.json`. You'll notice as you start typing the text into the field, GitHub will recognize that you're creating this new folder & file and thus make it look like the screenshot below. The screenshot also contains the steps for rounding everything else out on this screen.
+
+![](assets/github-add-devcontainer-json.png)
+
+Okay, we're done with the GitHub repository setup and are finally ready to create the GitHub Codespace itself! To do this, click on the icon in the top left corner of the screen that looks like 3 horizontal lines (side note: this icon is formally called a **hamburger menu**) and then click `Codespaces`.
+
+What you'll see is a screen that looks like this. This is the screen where we can create our new codespace as well as visiting any existing codespaces we have. Click the green "New codespace" button.
+
+![](assets/github-create-new-codespace.png)
+
+You'll now be greeted with one final form to create our codespace. This form may look daunting, but it's rather simple. All you need to do is select the GitHub repository we just created with the dropdown menu in the `Repository` field, and everything else should be good to go. Note under the `Dev Container Figuration` section that it will read `Java - Vaadin Development Environment`. This is because GitHub Codespaces detected that `devcontainer.json` file we created just a little bit ago. Nice! All we have to do to finish this up is to click the green "Create codespace" button.
+
+![](assets/github-codespace-form.png)
+
+If all went well, you should finally see your GitHub Codespace, and if you're an experienced VS Code user, you'll notice it looks very familiar! Again, this is because a GitHub Codespace really is just VS Code in a browser. One tiny note: You might be wondering why the color / theming of your codespace looks different from mine. This is because GitHub codespaces can import your personal settings from your local Windows or macOS VS Code. I personally have an extension installed called `Atom One Dark Pro`, which does nothing but changes the coloring to a different color palette that I personally prefer! You absolutely do not need to do this; I just wanted to call out why our screens might look different.
+
+![](assets/github-codespace-final.png)
 
 ### Visual Studio Code
 In addition to installing all the software we've done so far, we will also need to ensure that we have installed **Visual Studio Code**, or **VS Code** for short. To be clear, when it comes to Java development, VS Code is actually NOT the number one recommended integrated development environment (IDE). That honor goes to **IntelliJ IDEA**. However, I'm recommending VS Code for this tutorial for a number of reasons. In short, VS Code is the most popular IDE in the world for software developers, and it's also the IDE that GitHub Codespaces uses. So, if you're following along with this tutorial, you'll need to have VS Code installed on your computer.
