@@ -8,8 +8,14 @@ To keep things easy and simple to understand, we're specifically going to be bui
 1. A form for the user to build their pizza, including the size, crust, and toppings.
 2. A confirmation screen that shows the user what they've ordered along with subtotal, tax, tip, and final total.
 
+
 ### Video Tutorial
 If you're more of a visual learner, I completed a complementary video tutorial over on my YouTube channel [at this link](https://www.youtube.com/live/SzNTJ8aDEOo?si=3hrxXng3LYA1QRLS). The video covers a good chunk of the content in this text-based tutorial below, but isn't all inclusive of everything we cover in the text-based tutorial. I have also included timestamps in the description of the YouTube video if you would like to hop around to specific sections.
+
+### Navigating This Tutorial
+What you are reading right now is what is referred to as a **README** file, which uses a special kind of documentation style called **markdown**. Many developer's use markdown to write technical documentation, so it is GitHub's preferred way to display documentation, as you are reading right now! Because this tutorial is pretty lengthy, you can jump around to various sections by clicking the icon as indicated in the screenshot below.
+
+![](assets/github-readme-nav.png)
 
 ## Prerequisites
 There are two core things that we're going to be doing across this tutorial:
