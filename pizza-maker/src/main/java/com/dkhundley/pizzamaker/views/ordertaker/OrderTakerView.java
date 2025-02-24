@@ -30,11 +30,17 @@ import java.util.Set;
 @PageTitle("Order Taker")
 @Route("")
 public class OrderTakerView extends Composite<VerticalLayout> {
+
+    // Instantiating components that we will directly interact with for computations
     private float subtotal = 0.0f;
+    private float grandTotal = 0.0f;
+    private float taxPercentage = 0.07f;
     private Select<PizzaItem> crustSizeSelect;
     private MultiSelectComboBox<PizzaItem> meatsSelect;
     private MultiSelectComboBox<PizzaItem> veggiesSelect;
     private H4 subtotalValueLabel;
+    private H4 tipAmountValueLabel;
+    private H4 grandTotalValueLabel;
 
     // COMPUTATIONAL FUNCTIONS
     // --------------------------------------------------------------------------------------------------------------------
@@ -47,6 +53,12 @@ public class OrderTakerView extends Composite<VerticalLayout> {
         subtotal += meats.stream().map(PizzaItem::value).reduce(0.0f, Float::sum);
         subtotal += veggies.stream().map(PizzaItem::value).reduce(0.0f, Float::sum);
         subtotalValueLabel.setText(String.format("$%.2f", subtotal));
+    }
+
+    // Defining a function to update the grand total value based on the subtotal and selected tip
+    private void updateGrandTotal(float subtotal, float tipAmount, H4 grandTotalValueLabel) {
+        grandTotal = subtotal + tipAmount + (subtotal * taxPercentage);
+        grandTotalValueLabel.setText(String.format("$%.2f", grandTotal));
     }
 
     // VAADIN UI COMPONENTS
@@ -141,27 +153,36 @@ public class OrderTakerView extends Composite<VerticalLayout> {
 
         // Creating the tip amount header and label
         H4 tipAmountLabel = new H4("Tip Amount:");
-        H4 tipAmountValueLabel = new H4("$0.00");
+        this.tipAmountValueLabel = new H4("$0.00");
         tipAmountValueLabel.setWidth("max-content");
         tipPercentageRadioGroup.addValueChangeListener(event -> {
             String selected = event.getValue();
+            float tipAmount = 0.0f;
             if (selected != null) {
                 if ("Custom".equals(selected)) {
                     Double customAmount = customTipAmountField.getValue();
-                    tipAmountValueLabel.setText(String.format("$%.2f", customAmount != null ? customAmount : 0.0));
+                    tipAmount = customAmount != null ? customAmount.floatValue() : 0.0f;
                 } else {
                     float percentage = Float.parseFloat(selected.replace("%", "")) / 100;
-                    tipAmountValueLabel.setText(String.format("$%.2f", subtotal * percentage));
+                    tipAmount = subtotal * percentage;
                 }
             }
+            tipAmountValueLabel.setText(String.format("$%.2f", tipAmount));
+            updateGrandTotal(subtotal, tipAmount, grandTotalValueLabel);
         });
 
         customTipAmountField.addValueChangeListener(event -> {
             if ("Custom".equals(tipPercentageRadioGroup.getValue())) {
                 Double value = event.getValue();
-                tipAmountValueLabel.setText(String.format("$%.2f", value != null ? value : 0.0));
+                float tipAmount = value != null ? value.floatValue() : 0.0f;
+                tipAmountValueLabel.setText(String.format("$%.2f", tipAmount));
+                updateGrandTotal(subtotal, tipAmount, grandTotalValueLabel);
             }
         });
+
+        // Creating the grand total header and label
+        H4 grandTotalLabel = new H4("Grand Total:");
+        this.grandTotalValueLabel = new H4(String.format("$%.2f", grandTotal));
 
         // Creating the "Submit Order!" button and defining functionality
         Button submitOrderButton = new Button("Submit Order!", event -> {
@@ -218,7 +239,7 @@ public class OrderTakerView extends Composite<VerticalLayout> {
         // Add components to the layout
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
-        getContent().add(title, subtitle, separator1, toppingsTitle, pizzaOptionsForm, separator2, tipTitle, tipPercentageRadioGroup, customTipAmountField, tipAmountLabel, tipAmountValueLabel, submitOrderButton);
+        getContent().add(title, subtitle, separator1, toppingsTitle, pizzaOptionsForm, separator2, tipTitle, tipPercentageRadioGroup, customTipAmountField, tipAmountLabel, tipAmountValueLabel, grandTotalLabel, grandTotalValueLabel, submitOrderButton);
         pizzaOptionsForm.add(crustSizeSelect, meatsSelect, veggiesSelect, subtotalLabel, subtotalValueLabel);
     }
 
