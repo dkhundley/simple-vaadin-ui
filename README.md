@@ -460,7 +460,7 @@ TBA
 #### Updating Other UI Elements
 TBA
 
-#### Calculating Subtotal and Total
+#### Calculating Subtotal, Tax, and Grand Total
 TBA
 
 #### Passing Data to the Confirmation Screen
@@ -469,10 +469,13 @@ TBA
 
 
 ### Altering the Confirmation Screen Java File
-TBA
+Now that we have completed updating the order taker view, we're ready to make the appropriate alterations to the confirmation screen. Because we're doing the computation of things like subtotal, tax, and grand total in the order taker view, the confirmation screen is going to be relatively straightforward. We're going to make a few alterations to the confirmation screen to ensure that it displays the information we want it to.
 
 #### Loading the Data from the Order Taker
 TBA
 
 #### Viewing the Order Details from the Order Taker
+TBA
+
+#### Returning to the Order Taker
 TBA
