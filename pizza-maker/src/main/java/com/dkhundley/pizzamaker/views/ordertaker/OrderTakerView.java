@@ -1,6 +1,10 @@
 // Importing all the special code we need to build our Vaadin UI
 package com.dkhundley.pizzamaker.views.ordertaker;
-
+import com.dkhundley.pizzamaker.views.confirmationscreen.ConfirmationScreenView;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -19,28 +23,29 @@ import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import java.util.ArrayList;
-import java.util.List;
 import com.vaadin.flow.component.UI;
-import com.dkhundley.pizzamaker.views.confirmationscreen.ConfirmationScreenView;
 import com.vaadin.flow.router.QueryParameters;
-import java.util.Map;
-import java.util.Set;
 
 @PageTitle("Order Taker")
 @Route("")
 public class OrderTakerView extends Composite<VerticalLayout> {
 
+    // VARIABLE INSTANTIATION
+    // --------------------------------------------------------------------------------------------------------------------
     // Instantiating components that we will directly interact with for computations
     private float subtotal = 0.0f;
     private float grandTotal = 0.0f;
     private float taxPercentage = 0.07f;
+    private float taxAmount = 0.0f;
+    private float tipAmount = 0.0f;
     private Select<PizzaItem> crustSizeSelect;
     private MultiSelectComboBox<PizzaItem> meatsSelect;
     private MultiSelectComboBox<PizzaItem> veggiesSelect;
     private H4 subtotalValueLabel;
     private H4 tipAmountValueLabel;
     private H4 grandTotalValueLabel;
+
+
 
     // COMPUTATIONAL FUNCTIONS
     // --------------------------------------------------------------------------------------------------------------------
@@ -57,9 +62,12 @@ public class OrderTakerView extends Composite<VerticalLayout> {
 
     // Defining a function to update the grand total value based on the subtotal and selected tip
     private void updateGrandTotal(float subtotal, float tipAmount, H4 grandTotalValueLabel) {
-        grandTotal = subtotal + tipAmount + (subtotal * taxPercentage);
-        grandTotalValueLabel.setText(String.format("$%.2f", grandTotal));
+        this.grandTotal = subtotal + tipAmount + (subtotal * taxPercentage);
+        this.taxAmount = subtotal * taxPercentage;
+        grandTotalValueLabel.setText(String.format("$%.2f", this.grandTotal));
     }
+
+
 
     // VAADIN UI COMPONENTS
     // --------------------------------------------------------------------------------------------------------------------
@@ -151,32 +159,31 @@ public class OrderTakerView extends Composite<VerticalLayout> {
             customTipAmountField.setVisible("Custom".equals(value));
         });
 
-        // Creating the tip amount header and label
+        // Creating the tip amount header, label, and radio button selectors
         H4 tipAmountLabel = new H4("Tip Amount:");
         this.tipAmountValueLabel = new H4("$0.00");
         tipAmountValueLabel.setWidth("max-content");
         tipPercentageRadioGroup.addValueChangeListener(event -> {
             String selected = event.getValue();
-            float tipAmount = 0.0f;
+            this.tipAmount = 0.0f;
             if (selected != null) {
-                if ("Custom".equals(selected)) {
-                    Double customAmount = customTipAmountField.getValue();
-                    tipAmount = customAmount != null ? customAmount.floatValue() : 0.0f;
-                } else {
-                    float percentage = Float.parseFloat(selected.replace("%", "")) / 100;
-                    tipAmount = subtotal * percentage;
-                }
+            if ("Custom".equals(selected)) {
+                Double customAmount = customTipAmountField.getValue();
+                this.tipAmount = customAmount != null ? customAmount.floatValue() : 0.0f;
+            } else {
+                float percentage = Float.parseFloat(selected.replace("%", "")) / 100;
+                this.tipAmount = subtotal * percentage;
             }
-            tipAmountValueLabel.setText(String.format("$%.2f", tipAmount));
-            updateGrandTotal(subtotal, tipAmount, grandTotalValueLabel);
+            }
+            tipAmountValueLabel.setText(String.format("$%.2f", this.tipAmount));
+            updateGrandTotal(subtotal, this.tipAmount, grandTotalValueLabel);
         });
-
         customTipAmountField.addValueChangeListener(event -> {
             if ("Custom".equals(tipPercentageRadioGroup.getValue())) {
-                Double value = event.getValue();
-                float tipAmount = value != null ? value.floatValue() : 0.0f;
-                tipAmountValueLabel.setText(String.format("$%.2f", tipAmount));
-                updateGrandTotal(subtotal, tipAmount, grandTotalValueLabel);
+            Double value = event.getValue();
+            this.tipAmount = value != null ? value.floatValue() : 0.0f;
+            tipAmountValueLabel.setText(String.format("$%.2f", this.tipAmount));
+            updateGrandTotal(subtotal, this.tipAmount, grandTotalValueLabel);
             }
         });
 
@@ -186,63 +193,32 @@ public class OrderTakerView extends Composite<VerticalLayout> {
 
         // Creating the "Submit Order!" button and defining functionality
         Button submitOrderButton = new Button("Submit Order!", event -> {
-            boolean isValid = true;
-            String errorMessage = "";
 
-            // Ensuring that all the appropriate fields have been filled in
-            if (crustSizeSelect.getValue() == null) {
-                isValid = false;
-                errorMessage += "Please select a crust size.\n";
-            }
-            if (meatsSelect.getValue().isEmpty()) {
-                isValid = false;
-                errorMessage += "Please select at least one meat topping.\n";
-            }
-            if (veggiesSelect.getValue().isEmpty()) {
-                isValid = false;
-                errorMessage += "Please select at least one veggie topping.\n";
-            }
-            if (tipPercentageRadioGroup.getValue() == null) {
-                isValid = false;
-                errorMessage += "Please select a tip percentage.\n";
-            } else if ("Custom".equals(tipPercentageRadioGroup.getValue()) && 
-                      (customTipAmountField.getValue() == null || customTipAmountField.getValue() <= 0)) {
-                isValid = false;
-                errorMessage += "Please enter a valid custom tip amount.\n";
-            }
-
-            // Submitting the pizza order
-            if (isValid) {
-                QueryParameters params = QueryParameters.simple(Map.of(
-                    "crustSizeValue", crustSizeSelect.getValue().value().toString(),
-                    "crustSizeLabel", crustSizeSelect.getValue().label(),
-                    "meatsValues", String.join(",", meatsSelect.getValue().stream().map(item -> item.value().toString()).toList()),
-                    "meatsLabels", String.join(",", meatsSelect.getValue().stream().map(PizzaItem::label).toList()),
-                    "veggiesValues", String.join(",", veggiesSelect.getValue().stream().map(item -> item.value().toString()).toList()),
-                    "veggiesLabels", String.join(",", veggiesSelect.getValue().stream().map(PizzaItem::label).toList()),
-                    "tipPercentage", tipPercentageRadioGroup.getValue(),
-                    "customTipAmount", customTipAmountField.getValue() != null ? 
-                        customTipAmountField.getValue().toString() : ""
-                ));
-                UI.getCurrent().navigate(ConfirmationScreenView.class, params);
-            } else {
-                com.vaadin.flow.component.notification.Notification.show(
-                    errorMessage,
-                    3000,
-                    com.vaadin.flow.component.notification.Notification.Position.MIDDLE
-                );
-            }
+            // Saving all the form information from this view that we will load back into the Confirmation Screen view
+            QueryParameters formInformation = QueryParameters.simple(Map.of(
+                "selectedCrustSize", crustSizeSelect.getValue().label(),
+                "selectedMeatToppings", String.join(",", meatsSelect.getValue().stream().map(PizzaItem::label).toList()),
+                "selectedVeggieToppings", String.join(",", veggiesSelect.getValue().stream().map(PizzaItem::label).toList()),
+                "tipAmount", String.format("%.2f", tipAmount),
+                "subtotal", String.format("%.2f", subtotal),
+                "grandTotal", String.format("%.2f", grandTotal),
+                "taxAmount", String.format("%.2f", taxAmount)
+            ));
+        
+            // Navigating to the Confirmation Screen view with the form information
+            UI.getCurrent().navigate(ConfirmationScreenView.class, formInformation);
         });
         submitOrderButton.setWidth("min-content");
         submitOrderButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        // Add components to the layout
+        // Adding components to the layout
         getContent().setWidth("100%");
         getContent().getStyle().set("flex-grow", "1");
         getContent().add(title, subtitle, separator1, toppingsTitle, pizzaOptionsForm, separator2, tipTitle, tipPercentageRadioGroup, customTipAmountField, tipAmountLabel, tipAmountValueLabel, grandTotalLabel, grandTotalValueLabel, submitOrderButton);
         pizzaOptionsForm.add(crustSizeSelect, meatsSelect, veggiesSelect, subtotalLabel, subtotalValueLabel);
     }
 
+    
 
     // PIZZA OPTION SELECTORS
     // --------------------------------------------------------------------------------------------------------------------

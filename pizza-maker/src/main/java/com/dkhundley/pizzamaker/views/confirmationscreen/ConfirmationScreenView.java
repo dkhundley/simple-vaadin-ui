@@ -1,6 +1,8 @@
 // Importing all the special code we need to build our Vaadin UI
 package com.dkhundley.pizzamaker.views.confirmationscreen;
-
+import com.dkhundley.pizzamaker.views.ordertaker.OrderTakerView;
+import java.util.List;
+import java.util.Map;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.details.Details;
@@ -19,31 +21,20 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 
-import java.util.List;
-import java.util.Map;
-
 // Setting our page route (Note: if this was empty, it would be considered the root or "home" page. Naturally, this is not our home page!)
 @PageTitle("Confirmation Screen")
 @Route("confirmation-screen")
 public class ConfirmationScreenView extends Composite<VerticalLayout> implements HasUrlParameter<String> {
 
-    // Constructing the view
-    public ConfirmationScreenView() {
-        getContent().setWidth("100%");
-        getContent().getStyle().set("flex-grow", "1");
-    }
-
-    // #X. GETTING THE ORDER DETAILS FROM THE ORDER TAKER SCREEN!!!
-    // -------------------------------------------------------------------------------------------------------------------
+    // LOADING OUR ORDER DETAILS FROM THE ORDER TAKER VIEW
+    // --------------------------------------------------------------------------------------------------------------------
     // Instantiating variables to store order details
     private String crustSize;
     private List<String> meats;
     private List<String> veggies;
-    private String tipPercentage;
-    private Float customTipAmount;
-    private Float crustSizeValue;
-    private List<Float> meatsValues;
-    private List<Float> veggiesValues;
+    private Float tipAmount;
+    private Float subtotal;
+    private Float grandTotal;
 
     // Setting the parameters from the pizza order taker view
     @Override
@@ -54,80 +45,57 @@ public class ConfirmationScreenView extends Composite<VerticalLayout> implements
         Map<String, List<String>> parameterMap = queryParameters.getParameters();
         
         // Storing values in instance variables
-        crustSize = parameterMap.getOrDefault("crustSizeLabel", List.of("")).get(0);
-        meats = List.of(parameterMap.getOrDefault("meatsLabels", List.of("")).get(0).split(","));
-        veggies = List.of(parameterMap.getOrDefault("veggiesLabels", List.of("")).get(0).split(","));
-        tipPercentage = parameterMap.getOrDefault("tipPercentage", List.of("")).get(0);
-        
-        // Parse numeric values safely
-        String customTipStr = parameterMap.getOrDefault("customTipAmount", List.of("0")).get(0);
-        customTipAmount = customTipStr.isEmpty() ? 0f : Float.parseFloat(customTipStr);
-        
-        crustSizeValue = Float.parseFloat(parameterMap.getOrDefault("crustSizeValue", List.of("0")).get(0));
-        
-        // Parse arrays of float values
-        String meatsValuesStr = parameterMap.getOrDefault("meatsValues", List.of("")).get(0);
-        meatsValues = meatsValuesStr.isEmpty() ? 
-            List.of() : 
-            List.of(meatsValuesStr.split(",")).stream()
-                .map(Float::parseFloat)
-                .toList();
-        
-        String veggiesValuesStr = parameterMap.getOrDefault("veggiesValues", List.of("")).get(0);
-        veggiesValues = veggiesValuesStr.isEmpty() ? 
-            List.of() : 
-            List.of(veggiesValuesStr.split(",")).stream()
-                .map(Float::parseFloat)
-                .toList();
+        crustSize = parameterMap.getOrDefault("selectedCrustSize", List.of("")).get(0);
+        meats = List.of(parameterMap.getOrDefault("selectedMeatToppings", List.of("")).get(0).split(","));
+        veggies = List.of(parameterMap.getOrDefault("selectedVeggieToppings", List.of("")).get(0).split(","));
+
+        // Safely parsing any dollar amount values from string values back into float values
+        String customTipStr = parameterMap.getOrDefault("tipAmount", List.of("0")).get(0);
+        tipAmount = customTipStr.isEmpty() ? 0f : Float.parseFloat(customTipStr);
+        String subtotalStr = parameterMap.getOrDefault("subtotal", List.of("0")).get(0);
+        subtotal = subtotalStr.isEmpty() ? 0f : Float.parseFloat(subtotalStr);
+        String grandTotalStr = parameterMap.getOrDefault("grandTotal", List.of("0")).get(0);
+        grandTotal = grandTotalStr.isEmpty() ? 0f : Float.parseFloat(grandTotalStr);
 
         // Initializing the UI (See below!)
         initializeUI();
     }
 
-    // #X. DEFINING THE VIEW OF THE ORDER RESULTS SCREEN
-    // -------------------------------------------------------------------------------------------------------------------
+    // VAADIN UI COMPONENTS
+    // --------------------------------------------------------------------------------------------------------------------
     private void initializeUI() {
 
-        // Page title and subtitle
+        // Defining the title and subtitle
         H1 title = new H1("Order Confirmation");
         H3 subtitle = new H3("Your pizza is in the oven!");
 
-        // Order details section
+        // Defining the section to contain collapsible fields for the order details (see below for populating these details)
         H3 orderDetailsHeader = new H3("Order Details");
         Details crustSizeDetails = createCrustDetailsSection();
         Details meatDetails = createMeatDetailsSection();
         Details veggieDetails = createVeggieDetailsSection();
 
-        // Pricing details section
+        // Creating the section for the pricing details
         H3 pricingDetailsHeader = new H3("Pricing Details");
-        HorizontalLayout subtotalRow = createPricingRow("Subtotal:", "$0.00");
-        HorizontalLayout taxRow = createPricingRow("Tax:", "$0.00");
-        HorizontalLayout tipRow = createTipRow("Tip:", "$0.00");
-        HorizontalLayout totalRow = createPricingRow("TOTAL:", "$0.00");
+        HorizontalLayout subtotalRow = createPricingRow("Subtotal:", String.format("$%.2f", subtotal));
+        HorizontalLayout taxRow = createPricingRow("Tax:", String.format("$%.2f", subtotal * 0.1));
+        HorizontalLayout tipRow = createPricingRow("Tip:", String.format("$%.2f", tipAmount));
+        HorizontalLayout totalRow = createPricingRow("TOTAL:", String.format("$%.2f", grandTotal));
 
-        // Secondary action button
-        Button orderAnotherPizzaButton = new Button("Order another pizza?");
+        // Defining the button to return to the order taker view to return to the order taker view
+        Button orderAnotherPizzaButton = new Button("Order another pizza?", 
+            e -> getUI().ifPresent(ui -> ui.navigate(OrderTakerView.class)));
 
         // Adding components to the overall layout
-        getContent().add(
-            title, 
-            subtitle, 
-            new Hr(), 
-            orderDetailsHeader, 
-            crustSizeDetails, 
-            meatDetails, 
-            veggieDetails, 
-            new Hr(), 
-            pricingDetailsHeader, 
-            subtotalRow, 
-            taxRow, 
-            tipRow, 
-            totalRow, 
-            new Hr(), 
-            orderAnotherPizzaButton
-        );
+        getContent().setWidth("100%");
+        getContent().getStyle().set("flex-grow", "1");
+        getContent().add(title, subtitle, new Hr(), orderDetailsHeader, crustSizeDetails, meatDetails, veggieDetails, new Hr(), pricingDetailsHeader, subtotalRow, taxRow, tipRow, totalRow, new Hr(), orderAnotherPizzaButton);
     }
 
+
+    // HORIZONTAL VIEW LAYOUT DETAILS FOR DISPLAYING PRICING INFORMATION
+    // --------------------------------------------------------------------------------------------------------------------
+    // Defining the horizontal layout for the pricing details
     private HorizontalLayout createPricingRow(String label, String value) {
         HorizontalLayout row = new HorizontalLayout();
         row.setWidthFull();
@@ -147,28 +115,9 @@ public class ConfirmationScreenView extends Composite<VerticalLayout> implements
         return row;
     }
 
-    private HorizontalLayout createTipRow(String label, String value) {
-        HorizontalLayout row = new HorizontalLayout();
-        row.setWidthFull();
-        row.addClassName(Gap.MEDIUM);
-        row.getStyle().set("flex-grow", "1");
-
-        Paragraph labelParagraph = new Paragraph(label);
-        labelParagraph.getStyle().set("flex-grow", "1");
-        labelParagraph.setMinWidth("100px");
-        labelParagraph.getStyle().set("font-size", "var(--lumo-font-size-xl)");
-
-        Paragraph valueParagraph = new Paragraph(value);
-        valueParagraph.setWidth("100%");
-        valueParagraph.getStyle().set("font-size", "var(--lumo-font-size-xl)");
-
-        row.add(labelParagraph, valueParagraph);
-        return row;
-    }
 
 
-
-    // SETTING CRUST DETAILS
+    // CRUST DETAILS FOR COLLAPSABLE FIELD
     // -------------------------------------------------------------------------------------------------------------------
     private void setDetailsCrustSize(Details details) {
         Span crustSizeSpan = new Span(this.crustSize);
@@ -187,7 +136,7 @@ public class ConfirmationScreenView extends Composite<VerticalLayout> implements
         return details;
     }
 
-    // SETTING MEAT TOPPING DETAILS
+    // MEAT DETAILS FOR COLLAPSABLE FIELD
     // -------------------------------------------------------------------------------------------------------------------
     private void setDetailsMeats(Details details) {
         VerticalLayout content = new VerticalLayout();
@@ -207,7 +156,7 @@ public class ConfirmationScreenView extends Composite<VerticalLayout> implements
         return details;
     }
 
-    // SETTING VEGGIE TOPPING DETAILS
+    // VEGGIE DETAILS FOR COLLAPSABLE FIELD
     // -------------------------------------------------------------------------------------------------------------------
     private void setDetailsVeggies(Details details) {
         VerticalLayout content = new VerticalLayout();
