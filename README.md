@@ -439,8 +439,8 @@ From here going forward, this is exactly how we will begin our application every
 ### Altering the Order Taker Java File
 We're finally ready into moving into altering our Java code. We're going to start with the order taker file, and we're going to make a number of alterations to it.
 
-#### ChatGPT Clean Code Tip
-(Note: This ChatGPT section is recommended but not required. You're welcome to manually update your code to match closely to what the final pizza maker looks like.)
+#### (Optional) ChatGPT Clean Code Tip
+(**NOTE**: This ChatGPT section is recommended but not required. You're welcome to manually update your code to match closely to what the final pizza maker looks like. Additionally, if you watch the video tutorial, you'll notice that this section didn't quite work out so well for me. 😅 Proceed with caution!)
 
 In the previous section when we looked at the code that Vaadin produces, we noted that the code is a little jumbled and not intuitive. That said, my first encouragement would be to leverage **ChatGPT** to help clean up the code. You don't need to have any paid subscription to do what I'm going to suggest. If you visit [ChatGPT's website](http://www.chatgpt.com), you are still able to make use of ChatGPT in a "logged out" fashion. Just a few things to keep in mind when using ChatGPT or any other Generative AI model:
 
@@ -453,15 +453,166 @@ Below, I am going to paste some code that I generated using Vaadin to support a 
 
 PASTE YOUR CODE HERE
 ```
+#### Instantiating the Variables We Interact With
+Because the Vaadin builder in part 1 is purely a "look and feel" builder, it did not need to do anything extra purely beyond what it needed to do to generate the UI. As such, you [won't find any sort of variables in the raw file](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker-raw/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L25-L28) to hold things like computed values, such as how we'll need to calculate the subtotal for our pizza after adding the crust size and toppings. 
+
+As you might be familiar with in typical Java class, we need to declare a few variables right off the bat for things that we will *specifically interact with*. So for example, we will interact with the `subtotal`, `tipAmount`, and `taxPercentage` variables to calculate a final grand total.
+
+Additionally, I personally ran into a tiny bit of a "gotcha" with Vaadin, and this could just be a "me" issue. In order to dynamically update the text representing things like our "Subtotal" or "Tip Amount", I also had to instantiate the specific variables for anything that we would interact with directly from the UI.
+
+In order to get our pizza maker to work properly, we'll have to instantiate variables representing the following things:
+
+- **Subtotal**: The cost of the pizza with its selected crust size and toppings but before tax and tip.
+- **Tip Amount**: The amount of money the user wants to tip. In a later section, we're going to add some radio representing some preset tip percentages (like 15%, 18%, 20%) and compute the tip amount dyamically based on the subtotal.
+- **Tax Percentage**: For our purposes, we're assuming a flat sales tax rate of 7%.
+    - (Note: I recognize that I messed up the way in which these values are typically calculated. 😅 Typically, tip is calculated on the total AFTER tax is applied. In my code, I have tip being calculated BEFORE tax is applied. Whoops.)
+- **Tax Amount**: The amount of money the user will pay in tax. This is calculated as subtotal times the tax percentage.
+- **Grand Total**: The final amount the user will pay for their pizza. This is calculated as subtotal plus tax plus tip.
+- **Pizza Item Components**: Think of these as any singular pizza topping or crust size. We'll need a way to select the pizza item per the appropriate menu selector and then dymamically update the subtotal based on the selected items.
+
+The code snippet below represents the variables we'll need to instantiate in order to get our pizza maker to work properly. You may already be familiar with the `float` keyword there. Those other keyboards like `H4` or `MultiSelectComboBox` are things specific to Vaadin. Later sections will point out the appropriate code to interact with these Vaadin components.
+
+(Note: From here on out, I will share both a direct link to the code I'm referencing and also a snippet of the code itself.)
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L33-L47)
+```java
+// Instantiating components that we will directly interact with for computations
+private float subtotal = 0.0f;
+private float grandTotal = 0.0f;
+private float taxPercentage = 0.07f;
+private float taxAmount = 0.0f;
+private float tipAmount = 0.0f;
+private Select<PizzaItem> crustSizeSelect;
+private MultiSelectComboBox<PizzaItem> meatsSelect;
+private MultiSelectComboBox<PizzaItem> veggiesSelect;
+private H4 subtotalValueLabel;
+private H4 tipAmountValueLabel;
+private H4 grandTotalValueLabel;
+```
 
 #### Updating the Menu Selectors
-TBA
+In this next section, we're actually going to accomplish two tasks in one step. Ultimately, we're going to accomplish our end goal of getting the menu selectors to display the right "Pizza Items". But in order to do that, we're going to have to take an intermediate step that will also set us up for success when we get to calculating other things in later sections.
 
-#### Updating Other UI Elements
-TBA
+The intermediate step? **We need a container to hold information about each "Pizza Item"**. As a reminder, I define "Pizza Item" as being any meat or veggie topping and single crust size. For the purposes of our tutorial, we can treat all these "Pizza Items" as essentially the same. Every "Pizza Item" will have three properties:
+
+- **Dollar Amount**: This is the cost of the "Pizza Item". For example, a "Small" crust size might cost $5.00. In the code, the specific property name is `value`.
+    - Note: You might be wondering, "Why is this not more descriptive than `value`, like `dollarAmount`? I actually tried to do this, but for some strange reason, I kept running into bugs. It could very well be my fault.
+- **Label**: This is the text that will display in the menu selector. For example, the "Small" crust size will display as "Small" in the menu selector. In the code, the specific property name is `label`.
+- **Disabled**: This is a boolean value that will determine if the "Pizza Item" is selectable or not. For example, if we're out of "Small" crust sizes, we might want to disable the "Small" crust size in the menu selector. In the meat and veggie selector menus, this property also helps tell Vaadin which choices have or haven't been selected yet. In the code, the specific property name is `disabled`.
+
+To store the information associated to each individual "Pizza Item", we're going to use a `record` in Java. A `record` is a very simple way to create a sort of "data structure" in Java. You might notice in your raw Vaadin code that it gives you this sample snippet:
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker-raw/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L87-L89)
+```java
+record SampleItem(String value, String label, Boolean disabled) {
+    }
+```
+
+To keep things simple, I made minimal changes for our pizza maker. Specifically, I changed the name from `SampleItem` to `PizzaItem` and updated the data type associated to the `value` property from a `String` to a `Float`. This is because we're going to be dealing with dollar amounts, and it's generally a good idea to use a `Float` or `Double` data type for money.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L225-L227)
+```java
+record PizzaItem(Float value, String label, Boolean disabled) {
+    }
+```
+
+We're now ready to populate our respective menu selectors with each of our "Pizza Items". First, let's glance at the raw Vaadin code to note a specific "gotcha."
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker-raw/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L89-L111)
+```java
+private void setSelectSampleData(Select select) {
+        List<SampleItem> sampleItems = new ArrayList<>();
+        sampleItems.add(new SampleItem("first", "First", null));
+        sampleItems.add(new SampleItem("second", "Second", null));
+        sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
+        sampleItems.add(new SampleItem("fourth", "Fourth", null));
+        select.setItems(sampleItems);
+        select.setItemLabelGenerator(item -> ((SampleItem) item).label());
+        select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(((SampleItem) item).disabled()));
+    }
+
+private void setMultiSelectComboBoxSampleData(MultiSelectComboBox multiSelectComboBox) {
+    List<SampleItem> sampleItems = new ArrayList<>();
+    sampleItems.add(new SampleItem("first", "First", null));
+    sampleItems.add(new SampleItem("second", "Second", null));
+    sampleItems.add(new SampleItem("third", "Third", Boolean.TRUE));
+    sampleItems.add(new SampleItem("fourth", "Fourth", null));
+    multiSelectComboBox.setItems(sampleItems);
+    multiSelectComboBox.setItemLabelGenerator(item -> ((SampleItem) item).label());
+}
+```
+
+Here's the problem... we created 3 menu selectors, but only 2 are showing here. Why? Recall that the crust selector is a single select selector, whereas the meat and veggie selectors were multi-select combo boxes. Because the meat and veggie selectors are the same Vaadin component type, Vaadin has them pointing back to the same object (`setMultiSelectComboBoxSampleData`). Obviously, we want to have distinct options across the respective meat and veggie selectors, so we need to split those out. After updating Vaadin's source code, here's what my final code looks like to build the content for the pizza item selectors.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L228-L261)
+```java
+// Setting crust size data for the crust selection component
+private void setSelectCrustData(Select<PizzaItem> select) {
+    List<PizzaItem> crustOptions = new ArrayList<>();
+    crustOptions.add(new PizzaItem(8.00f, "Small ($8.00)", null));
+    crustOptions.add(new PizzaItem(10.00f, "Medium ($10.00)", null));
+    crustOptions.add(new PizzaItem(12.00f, "Large ($12.00)", null));
+    crustOptions.add(new PizzaItem(14.00f, "Extra Large ($14.00)", null));
+    select.setItems(crustOptions);
+    select.setItemLabelGenerator(PizzaItem::label);
+    select.setItemEnabledProvider(item -> !Boolean.TRUE.equals(item.disabled()));
+}
+
+// Set sample data for Meats MultiSelectComboBox component
+private void setSelectMeatsData(MultiSelectComboBox<PizzaItem> multiSelectComboBox) {
+    List<PizzaItem> meatOptions = new ArrayList<>();
+    meatOptions.add(new PizzaItem(1.50f, "Pepperoni ($1.50)", null));
+    meatOptions.add(new PizzaItem(1.50f, "Sausage ($1.50)", null));
+    meatOptions.add(new PizzaItem(1.75f, "Bacon ($1.75)", null));
+    meatOptions.add(new PizzaItem(1.50f, "Ham ($1.50)", null));
+    multiSelectComboBox.setItems(meatOptions);
+    multiSelectComboBox.setItemLabelGenerator(PizzaItem::label);
+}
+
+// Set sample data for Veggies MultiSelectComboBox component
+private void setSelectVeggiesData(MultiSelectComboBox<PizzaItem> multiSelectComboBox) {
+    List<PizzaItem> veggieOptions = new ArrayList<>();
+    veggieOptions.add(new PizzaItem(1.00f, "Mushrooms ($1.00)", null));
+    veggieOptions.add(new PizzaItem(0.75f, "Onions ($0.75)", null));
+    veggieOptions.add(new PizzaItem(0.75f, "Peppers ($0.75)", null));
+    veggieOptions.add(new PizzaItem(1.00f, "Olives ($1.00)", null));
+    multiSelectComboBox.setItems(veggieOptions);
+    multiSelectComboBox.setItemLabelGenerator(PizzaItem::label);
+}
+```
+If we wanted to keep adding additional options to each of the menu selectors, we just keep following the same pattern by adding a new line of code. Remember: it doesn't matter if a "Pizza Item" is a crust size, meat, or veggie. With our Java code, we treat them all the same way as a `PizzaItem`, which will come in handy later when we start calculating things like subtotal.
+
+#### (Optional) Updating Other UI Elements
+Let's say that you're working on your Java backend code here and realize something like, "Oh shoot, I forgot to add a `H4` header to display the subtotal!" You could always go back to the Vaadin builder, but that might be more of a hassle than its worth. Instead, you can just add the code directly to your Java file. Here's an example of how you might add a `H4` header to display the subtotal.
+
+```java
+public OrderTakerView() {
+    // Other code here...
+
+    // Adding a H4 header to display the subtotal
+    H4 subtotalLabel = new H4("Subtotal: ");
+
+    // Other code here...
+}
+```
+
+It's tempting to think this is all you need to do, but if you rebuild your view at this point, you won't see your new code! This is because with Vaadin, your new component also needs added to Vaadin's `getContent()` method. Here's how you would add the `H4` header to display the subtotal.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/cfcc3c709aea9c168050438c54dd4e8755b60e93/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L214-L219)
+```java
+public OrderTakerView() {
+    // Other code here...
+
+    // Adding a H4 header to display the subtotal
+    getContent().add(subtotalLabel);
+
+    // Other code here...
+}
+```
+
 
 #### Calculating Subtotal, Tax, and Grand Total
-TBA
+Of this entire tutorial, **this specific subsection will be most applicable to your classwork**. The reason for this is because this is where we will be creating a custom bit of custom code to define the "behavior" of our application as a user fills out the pizza order form.
 
 #### Passing Data to the Confirmation Screen
 TBA
