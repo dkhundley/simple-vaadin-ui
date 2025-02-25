@@ -818,10 +818,141 @@ This effectively completes everything we need to do in the order taker view! We'
 Now that we have completed updating the order taker view, we're ready to make the appropriate alterations to the confirmation screen. Because we're doing the computation of things like subtotal, tax, and grand total in the order taker view, the confirmation screen is going to be relatively straightforward. We're going to make a few alterations to the confirmation screen to ensure that it displays the information we want it to.
 
 #### Loading the Data from the Order Taker
-TBA
+In the last step of completing our order taker view, you'll recall that we set all the data that we want to load in the Confirmation Screen view as `QueryParameters`. The code snippet below demonstrates how we load this data into the Confirmation Screen view.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/fd192ae23d8325123c08dacdd47ceeb49f292502/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/confirmationscreen/ConfirmationScreenView.java#L39-L63)
+```java
+// Setting the parameters from the pizza order taker view
+@Override
+public void setParameter(BeforeEvent event, @OptionalParameter String parameter) {
+    
+    // Extracting the values from the previous order taker view
+    QueryParameters queryParameters = event.getLocation().getQueryParameters();
+    Map<String, List<String>> parameterMap = queryParameters.getParameters();
+    
+    // Storing values in instance variables
+    crustSize = parameterMap.getOrDefault("selectedCrustSize", List.of("")).get(0);
+    meats = List.of(parameterMap.getOrDefault("selectedMeatToppings", List.of("")).get(0).split(","));
+    veggies = List.of(parameterMap.getOrDefault("selectedVeggieToppings", List.of("")).get(0).split(","));
+
+    // Safely parsing any dollar amount values from string values back into float values
+    String customTipStr = parameterMap.getOrDefault("tipAmount", List.of("0")).get(0);
+    tipAmount = customTipStr.isEmpty() ? 0f : Float.parseFloat(customTipStr);
+    String subtotalStr = parameterMap.getOrDefault("subtotal", List.of("0")).get(0);
+    subtotal = subtotalStr.isEmpty() ? 0f : Float.parseFloat(subtotalStr);
+    String grandTotalStr = parameterMap.getOrDefault("grandTotal", List.of("0")).get(0);
+    grandTotal = grandTotalStr.isEmpty() ? 0f : Float.parseFloat(grandTotalStr);
+
+    // Initializing the UI (See below!)
+    initializeUI();
+}
+```
+
+Let's step through what is happening in this code snippet:
+
+1. **Extracting the values from the previous order taker view**: We're using Vaadin's `QueryParameters` object to extract the data that we passed over from the order taker view. Recall that when we passed over the `QueryParameters` object, we passed over the selected crust size, meats, veggies, tip amount, subtotal, grand total, and tax amount
+2. **Converting the string values back to float values**: Because we passed over the values as strings, we need to convert them back to float values. This is what the code snippet is doing with the `Float.parseFloat` method.
+3. **Initializing the UI**: We're going to create a custom function to initialize the UI with the data we just loaded. This is what the `initializeUI` function is doing.
+
+You'll see that `initializeUI` contains all the same Vaadin components to build our Confirmation Screen, just like we had with the Order Taker view.
+
+In order to display these values in the UI, all we need to do is make appropriate reference to them. For example, the code snippet below demonstrates how we can display the subtotal, tax, tip, and grand total in the Confirmation Screen view.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/fd192ae23d8325123c08dacdd47ceeb49f292502/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/confirmationscreen/ConfirmationScreenView.java#L78-L84)
+```java
+// Creating the section for the pricing details
+H3 pricingDetailsHeader = new H3("Pricing Details");
+HorizontalLayout subtotalRow = createPricingRow("Subtotal:", String.format("$%.2f", subtotal));
+HorizontalLayout taxRow = createPricingRow("Tax:", String.format("$%.2f", subtotal * 0.1));
+HorizontalLayout tipRow = createPricingRow("Tip:", String.format("$%.2f", tipAmount));
+HorizontalLayout totalRow = createPricingRow("TOTAL:", String.format("$%.2f", grandTotal));
+```
+
+In order to display the specific order details within the collapsible fields, we'll need to update the code appropriately with our next subsection.
 
 #### Displaying the Order Details from the Order Taker
-TBA
+When we created collapsible details containers in the Vaadin builder, you might recall that we were not able to directly update the details that are displayed in the view. Instead, Vaadin gives us some boilerplate code that looks like this:
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/fd192ae23d8325123c08dacdd47ceeb49f292502/pizza-maker-raw/src/main/java/com/dkhundley/pizzamaker/views/confirmationscreen/ConfirmationScreenView.java#L140-L152)
+```java
+private void setDetailsSampleData(Details details) {
+    Span name = new Span("Sophia Williams");
+    Span email = new Span("sophia.williams@company.com");
+    Span phone = new Span("(501) 555-9128");
+    VerticalLayout content = new VerticalLayout(name, email, phone);
+    content.setSpacing(false);
+    content.setPadding(false);
+    details.setSummaryText("Contact information");
+    details.setOpened(true);
+    details.setContent(content);
+}
+```
+
+Additionally, keep in mind that we created 3 collapsible detail containers to display the details for our crust size, meat toppings, and veggie toppings respectively. Similar to how the order taker's multi-select combo boxes were pointing to the same object to populate its info, the same idea is going on here. This means that we'll essentially have to take our sample snippet of code and refactor it 3x to update the details for each of the collapsible containers. Below is the code to do just this:
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/fd192ae23d8325123c08dacdd47ceeb49f292502/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/confirmationscreen/ConfirmationScreenView.java#L120-L179)
+```java
+// CRUST DETAILS FOR COLLAPSABLE FIELD
+// -------------------------------------------------------------------------------------------------------------------
+private void setDetailsCrustSize(Details details) {
+    Span crustSizeSpan = new Span(this.crustSize);
+    VerticalLayout content = new VerticalLayout(crustSizeSpan);
+    content.setSpacing(false);
+    content.setPadding(false);
+    details.setSummaryText("Crust Size");
+    details.add(content);
+    details.setContent(content);
+}
+
+private Details createCrustDetailsSection() {
+    Details details = new Details();
+    details.setWidth("100%");
+    setDetailsCrustSize(details);
+    return details;
+}
+
+// MEAT DETAILS FOR COLLAPSABLE FIELD
+// -------------------------------------------------------------------------------------------------------------------
+private void setDetailsMeats(Details details) {
+    VerticalLayout content = new VerticalLayout();
+    this.meats.forEach(meat -> {
+        Span meatSpan = new Span(meat);
+        content.add(meatSpan);
+    });
+    details.setSummaryText("Meat Toppings");
+    details.setOpened(false);
+    details.setContent(content);
+}
+
+private Details createMeatDetailsSection() {
+    Details details = new Details();
+    details.setWidth("100%");
+    setDetailsMeats(details);
+    return details;
+}
+
+// VEGGIE DETAILS FOR COLLAPSABLE FIELD
+// -------------------------------------------------------------------------------------------------------------------
+private void setDetailsVeggies(Details details) {
+    VerticalLayout content = new VerticalLayout();
+    this.veggies.forEach(veggie -> {
+        Span veggieSpan = new Span(veggie);
+        content.add(veggieSpan);
+    });
+    details.setSummaryText("Veggie Toppings");
+    details.setOpened(false);
+    details.setContent(content);
+}
+
+private Details createVeggieDetailsSection() {
+    Details details = new Details();
+    details.setWidth("100%");
+    setDetailsVeggies(details);
+    return details;
+}
+```
+
+Notice in the code above that when we see things like `this.meats` or `this.veggies`, we're referring back to the same variables containing the information that we loaded from the `QueryParameters` in the previous section. This is how we're able to display the information we want in the Confirmation Screen view.
 
 #### Returning to the Order Taker
 We are on the final homestretch! The last thing we need to do is to update our button to "Submit Another Order" to return back to our order taker view. This is going to be very similar to the final step we took in completing the order taker view, except this time, we don't have to pass back any information with the `QueryParameters`. Below represents the code to complete our confirmation screen:
