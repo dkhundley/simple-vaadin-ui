@@ -610,14 +610,209 @@ public OrderTakerView() {
 }
 ```
 
+#### Updating the Tip Percentage Section
+When we built the radio buttons to represent our tip percentage selector, you'll recall that the Vaadin builder did not allow us to directly edit these choices. Instead, it provided us some boilerplate code that looks like this:
 
-#### Calculating Subtotal, Tax, and Grand Total
-Of this entire tutorial, **this specific subsection will be most applicable to your classwork**. The reason for this is because this is where we will be creating a custom bit of custom code to define the "behavior" of our application as a user fills out the pizza order form.
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker-raw/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L66)
+```java
+radioGroup.setItems("Order ID", "Product Name", "Customer", "Status");
+```
+
+Updating the items themselves is pretty straightforward. All we need to do is update the respective options as such:
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L150)
+```java
+tipPercentageRadioGroup.setItems("10%", "15%", "20%", "Custom");
+```
+
+In the next section, we'll demonstrate how to calculate the tip dynamically based on these percentages; however, keep in mind that we also have a "Custom" option. In order to make the pizza taker more user friendly, I have the field to submit a custom tip hidden unless the user has selected this "Custom" option. Here is the code that I applied in order to get this behavior to work appropriately.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L157-L161)
+```java
+tipPercentageRadioGroup.addValueChangeListener(event -> {
+    String value = event.getValue();
+    customTipAmountField.setVisible("Custom".equals(value));
+});
+```
+
+What the code snippet above is doing is putting a listener on our radio group, and if the "Custom" option is selected, we make it visible with the `.setVisible` method there.
+
+
+
+#### Calculating Subtotal, Tip, Tax, and Grand Total
+Of this entire tutorial, **this specific subsection will be most applicable to your classwork**. The reason for this is because this is where we will be creating a custom bit of custom code to define the "behavior" of our application as a user fills out the pizza order form. In fact, I'm going to recommend you place all your custom code [in this single section as I have defined in the final pizza maker code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L50-L69).
+
+Let's focus on calculating the subtotal for now. Remember, in order to calculate the subtotal, we need to add up the following items:
+
+- The price of the selected crust size
+- The price of all the selected meats
+- The price of all the selected veggies
+
+I'm going to create a custom function to calculate the subtotal with the code snippet below.
+
+[Link to source code]()
+```java
+// Defining a function to update the subtotal value based on the selected pizza options
+private void updateSubtotal(PizzaItem crustSize, Set<PizzaItem> meats, Set<PizzaItem> veggies, H4 subtotalValueLabel) {
+    subtotal = 0.0f;
+    if (crustSize != null) {
+        subtotal += crustSize.value();
+    }
+    subtotal += meats.stream().map(PizzaItem::value).reduce(0.0f, Float::sum);
+    subtotal += veggies.stream().map(PizzaItem::value).reduce(0.0f, Float::sum);
+    subtotalValueLabel.setText(String.format("$%.2f", subtotal));
+}
+```
+
+Stepping through what this function does, we have the following steps:
+1. Resetting the subtotal back to 0.
+2. Adding the price of the crust (if a crust size has been selected)
+3. Adding the price of each respective meat topping (if any have been selected)
+4. Adding the price of each respective veggie topping (if any have been selected)
+5. Updating the subtotal label (`subtotalValueLabel`) to display the new subtotal on the user interface.
+
+The code in the function here demonstrates how to appropriately extract the data from each of these selectors. It can be a little odd, so feel free to copy and paste this code directly into your Java file if you need to extract data for your own Vaadin Java application.
+
+Now, in order to dynamically update the subtotal as the user selects different options, we need to add a listener to each of the menu selectors. Here's the code snippet that demonstrates how to add a listener to the crust size selector.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L98-L133)
+```java
+// Creating a simple selector to be able to select a single crust option
+this.crustSizeSelect = new Select<>();
+crustSizeSelect.setLabel("Crust Size");
+crustSizeSelect.setWidth("min-content");
+setSelectCrustData(crustSizeSelect);
+crustSizeSelect.addValueChangeListener(e -> updateSubtotal(
+    crustSizeSelect.getValue(),
+    meatsSelect.getValue(),
+    veggiesSelect.getValue(),
+    subtotalValueLabel
+));
+
+// Creating a multi-select selector to be able to select multiple meat options
+this.meatsSelect = new MultiSelectComboBox<>();
+meatsSelect.setLabel("Meats");
+meatsSelect.setWidth("min-content");
+setSelectMeatsData(meatsSelect);
+meatsSelect.addValueChangeListener(e -> updateSubtotal(
+    crustSizeSelect.getValue(),
+    meatsSelect.getValue(),
+    veggiesSelect.getValue(),
+    subtotalValueLabel
+));
+
+// Creating a multi-select selector to be able to select multiple veggie options
+this.veggiesSelect = new MultiSelectComboBox<>();
+veggiesSelect.setLabel("Veggies");
+veggiesSelect.setWidth("min-content");
+setSelectVeggiesData(veggiesSelect);
+veggiesSelect.addValueChangeListener(e -> updateSubtotal(
+    crustSizeSelect.getValue(),
+    meatsSelect.getValue(),
+    veggiesSelect.getValue(),
+    subtotalValueLabel
+));
+```
+
+Notice that with each of our respective selectors, we are adding a listener with `addValueChangeListener` that will recalculate the subtotal every time a user interacts with any of these 3 selectors.
+
+Next, let's calculate the tip, tax, and grand total. I'm looping these three together because you'll see in the code that these three values are calculated all at the same time. When it comes to calculating the tip, recall that we are either calculating the tip based on the percentage or using the flat amount if the user has selected the "Custom" option. Here's the code snippet that demonstrates how to calculate the tip, tax, and grand total. (We'll revisit grand total in a minute since it is also using a custom function.)
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L162-L189)
+```java
+// Creating the tip amount header, label, and radio button selectors
+H4 tipAmountLabel = new H4("Tip Amount:");
+this.tipAmountValueLabel = new H4("$0.00");
+tipAmountValueLabel.setWidth("max-content");
+tipPercentageRadioGroup.addValueChangeListener(event -> {
+    String selected = event.getValue();
+    this.tipAmount = 0.0f;
+    if (selected != null) {
+    if ("Custom".equals(selected)) {
+        Double customAmount = customTipAmountField.getValue();
+        this.tipAmount = customAmount != null ? customAmount.floatValue() : 0.0f;
+    } else {
+        float percentage = Float.parseFloat(selected.replace("%", "")) / 100;
+        this.tipAmount = subtotal * percentage;
+    }
+    }
+    tipAmountValueLabel.setText(String.format("$%.2f", this.tipAmount));
+    updateGrandTotal(subtotal, this.tipAmount, grandTotalValueLabel);
+});
+customTipAmountField.addValueChangeListener(event -> {
+    if ("Custom".equals(tipPercentageRadioGroup.getValue())) {
+    Double value = event.getValue();
+    this.tipAmount = value != null ? value.floatValue() : 0.0f;
+    tipAmountValueLabel.setText(String.format("$%.2f", this.tipAmount));
+    updateGrandTotal(subtotal, this.tipAmount, grandTotalValueLabel);
+    }
+});
+```
+
+This code might look a little intimidating, but let's break it down. Here's what's happening in this code snippet when the listener recognizes a change to the radio buttons:
+
+1. The tip amount is reset to 0.
+2. If the user has selected the "Custom" option, the tip amount is set to the custom amount entered by the user.
+3. If the user has selected a percentage option, the tip amount is calculated based on the subtotal and the selected percentage.
+4. The tip amount label is updated to reflect the new tip amount.
+5. The grand total is recalculated based on the new tip amount with the `updateGrandTotal` function.
+
+Speaking of updating the grand total, below represents another custom function I created to update the grand total.
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L63-L69)
+```java
+// Defining a function to update the grand total value based on the subtotal and selected tip
+private void updateGrandTotal(float subtotal, float tipAmount, H4 grandTotalValueLabel) {
+    this.grandTotal = subtotal + tipAmount + (subtotal * taxPercentage);
+    this.taxAmount = subtotal * taxPercentage;
+    grandTotalValueLabel.setText(String.format("$%.2f", this.grandTotal));
+}
+```
+
+Notice that this code is also the portion where the tax amount is calculated. (Again, keep in mind that I'm not calculating these things in the way you might see them typically calculated in any typical restaurant.) After the subtotal and tip amount are calculated, the grand total is calculated as the sum of the subtotal, tip amount, and tax amount. The grand total label is then updated to reflect the new grand total.
 
 #### Passing Data to the Confirmation Screen
-TBA
+We are just about done with our order taker view! The last thing we need to do is to program the "Submit Order!" button to both navigate on over to the confirmation screen while also passing all the data we need to display on the confirmation screen.
 
+First, let's remind ourselves what the raw code to create this button looks like:
 
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker-raw/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L69-L72)
+```java
+Button buttonPrimary = new Button();
+buttonPrimary.setText("Submit Order!");
+buttonPrimary.setWidth("min-content");
+buttonPrimary.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+```
+
+As you can see, the raw Vaadin code displays the button but has no functionality behind it to do anything. We need to update our button with this code snippet below:
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/1c5de810187da632c11a1a6909fda7c010a31669/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/ordertaker/OrderTakerView.java#L194-L213)
+```java
+// Creating the "Submit Order!" button and defining functionality
+Button submitOrderButton = new Button("Submit Order!", event -> {
+
+    // Saving all the form information from this view that we will load back into the Confirmation Screen view
+    QueryParameters formInformation = QueryParameters.simple(Map.of(
+        "selectedCrustSize", crustSizeSelect.getValue().label(),
+        "selectedMeatToppings", String.join(",", meatsSelect.getValue().stream().map(PizzaItem::label).toList()),
+        "selectedVeggieToppings", String.join(",", veggiesSelect.getValue().stream().map(PizzaItem::label).toList()),
+        "tipAmount", String.format("%.2f", tipAmount),
+        "subtotal", String.format("%.2f", subtotal),
+        "grandTotal", String.format("%.2f", grandTotal),
+        "taxAmount", String.format("%.2f", taxAmount)
+    ));
+
+    // Navigating to the Confirmation Screen view with the form information
+    UI.getCurrent().navigate(ConfirmationScreenView.class, formInformation);
+});
+```
+
+There are two things occurring with this code as the button is clicked.
+
+1. **Setting all the query parameters**: Vaadin provides this object referred to as `QueryParameters` that allows us to save any data from one view (e.g. our order taker) and pass it to another view (e.g. our confirmation screen). Now, this might be my ignorance, but I could not figure out how to get it to pass over anything except `String` values. This means as we pass over numerical values like subtotal or tip amount, we'll have to format them first as Strings. (You'll see how we convert these back to Float values when we load them back in with the Confirmation Screen view.)
+2. **Loading the Confirmation Screen view**: We're using Vaadin's `UI.getCurrent().navigate` method to navigate to the confirmation screen view. We're also passing over the `QueryParameters` object we created in the previous step.
+
+This effectively completes everything we need to do in the order taker view! We're now ready to move on to updating the confirmation screen.
 
 ### Altering the Confirmation Screen Java File
 Now that we have completed updating the order taker view, we're ready to make the appropriate alterations to the confirmation screen. Because we're doing the computation of things like subtotal, tax, and grand total in the order taker view, the confirmation screen is going to be relatively straightforward. We're going to make a few alterations to the confirmation screen to ensure that it displays the information we want it to.
