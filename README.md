@@ -820,8 +820,15 @@ Now that we have completed updating the order taker view, we're ready to make th
 #### Loading the Data from the Order Taker
 TBA
 
-#### Viewing the Order Details from the Order Taker
+#### Displaying the Order Details from the Order Taker
 TBA
 
 #### Returning to the Order Taker
-TBA
+We are on the final homestretch! The last thing we need to do is to update our button to "Submit Another Order" to return back to our order taker view. This is going to be very similar to the final step we took in completing the order taker view, except this time, we don't have to pass back any information with the `QueryParameters`. Below represents the code to complete our confirmation screen:
+
+[Link to source code](https://github.com/dkhundley/simple-vaadin-ui/blob/a3dee6a866daa057d9025dcda23bd9cc35aa1c6a/pizza-maker/src/main/java/com/dkhundley/pizzamaker/views/confirmationscreen/ConfirmationScreenView.java#L85-L88)
+```java
+// Defining the button to return to the order taker view to return to the order taker view
+Button orderAnotherPizzaButton = new Button("Order another pizza?", 
+    e -> getUI().ifPresent(ui -> ui.navigate(OrderTakerView.class)));
+```
